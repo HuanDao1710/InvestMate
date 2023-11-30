@@ -23,7 +23,6 @@ public class 	RequestHelper<R, B> {
 	private UriComponentsBuilder uriComponentsBuilder = null;
 
 
-
 	public RequestHelper<R, B> withBody(Object body) {
 		this.body = body;
 		return this;
