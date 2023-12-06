@@ -3,12 +3,14 @@ package vn.edu.hust.investmate.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Entity
-@Table(name = "companies")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "companies")
 public class CompanyEntity extends BaseEntity{
 	@Id
 	@Column(name="code")
@@ -19,5 +21,9 @@ public class CompanyEntity extends BaseEntity{
 	private String fullNameVi;
 	@Column(name = "business_type")
 	private String businessType;
+	@OneToOne(mappedBy = "companyEntity")
+	private OverviewCompanyEntity overviewCompanyEntity;
+	@OneToMany(mappedBy="companyEntity")
+	private Set<StockHistoryEntity> histories;
 
 }

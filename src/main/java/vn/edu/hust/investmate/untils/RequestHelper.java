@@ -12,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Map;
 
 
 @RequiredArgsConstructor
@@ -30,6 +31,11 @@ public class 	RequestHelper<R, B> {
 
 	public RequestHelper<R, B> withHeader(String headerName, String headerValue) {
 		headers.set(headerName, headerValue);
+		return this;
+	}
+
+	public RequestHelper<R, B> withHeader(Map<String, String> header) {
+		headers.setAll(header);
 		return this;
 	}
 

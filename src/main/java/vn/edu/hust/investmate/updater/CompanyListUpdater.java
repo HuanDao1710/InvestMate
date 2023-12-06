@@ -1,4 +1,4 @@
-package vn.edu.hust.investmate.service.data.update;
+package vn.edu.hust.investmate.updater;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -6,16 +6,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import vn.edu.hust.investmate.constant.API;
 import vn.edu.hust.investmate.domain.entity.CompanyEntity;
 import vn.edu.hust.investmate.repository.CompanyRepository;
+import vn.edu.hust.investmate.untils.ReadFileToString;
 import vn.edu.hust.investmate.untils.RequestHelper;
-import java.lang.reflect.Type;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,21 +22,21 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CompanyListUpdaterService implements UpdaterService{
+public class CompanyListUpdater implements UpdaterService{
 	private final RestTemplate restTemplate;
 	private final CompanyRepository companyRepository;
-
 	@Scheduled(fixedRate = 5 * 60* 1000)
 	@Transactional
 	public void update() throws JsonProcessingException {
 		var request = new RequestHelper<String, Object>(restTemplate);
 		request.withUri(API.API_STOCK_LIST);
-		var results = request.get(new ParameterizedTypeReference<>() {
-			@Override
-			public Type getType() {
-				return super.getType();
-			}
-		});
+//		var results = request.get(new ParameterizedTypeReference<>() {
+//			@Override
+//			public Type getType() {
+//				return super.getType();
+//			}
+//		});
+		var results = ReadFileToString.readFileToString("F:\\DATN\\backend\\invest-mate\\src\\main\\resources\\data\\list_stock.txt");
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String, List<Map<String, Object>>> jsonMap = mapper.readValue(results, new TypeReference<>() {});
 
@@ -46,9 +45,9 @@ public class CompanyListUpdaterService implements UpdaterService{
 		for(var map : dataList) {
 			CompanyEntity entity = new CompanyEntity();
 			entity.setCode((String) map.get("code"));
-			entity.setExchange((String) map.get("exchange"));
+			entity.setExchange((String) map.get("san"));
 			entity.setFullNameVi((String) map.get("fullname_vi"));
-			entity.setBusinessType((String) map.get("business_type"));
+			entity.setBusinessType((String) map.get("san"));
 			companyEntityList.add(entity);
 		}
 		companyRepository.deleteAllData();
