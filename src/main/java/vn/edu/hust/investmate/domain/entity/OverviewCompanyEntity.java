@@ -14,8 +14,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OverviewCompanyEntity extends BaseEntity{
 	@Id
+	private String code;
+	@MapsId
 	@JoinColumn(name="code", referencedColumnName = "code")
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne
 	private CompanyEntity companyEntity;
 	@Column(name="company_name")
 	private  String companyName;
@@ -41,7 +43,7 @@ public class OverviewCompanyEntity extends BaseEntity{
 	private int noShareholders;
 	@Column(name="foreign_percent")
 	private double foreignPercent;
-	@Column(name = "website ")
+	@Column(name = "website")
 	private String website;
 	@Column(name = "stock_rating")
 	private double stockRating;
@@ -69,4 +71,6 @@ public class OverviewCompanyEntity extends BaseEntity{
 	private String keyDevelopments;
 	@Column(name="business_strategies")
 	private String businessStrategies;
+
+
 }
