@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import vn.edu.hust.investmate.constant.API;
+import vn.edu.hust.investmate.constant.Constant;
 import vn.edu.hust.investmate.domain.entity.CompanyEntity;
 import vn.edu.hust.investmate.repository.CompanyRepository;
 import vn.edu.hust.investmate.untils.ReadFileToString;
@@ -24,10 +25,11 @@ import java.util.Map;
 public class CompanyListUpdater implements UpdaterService{
 	private final RestTemplate restTemplate;
 	private final CompanyRepository companyRepository;
-	@Scheduled(fixedRate = 5 * 60* 1000)
+	@Scheduled(fixedRate = Long.MAX_VALUE)
 	@Transactional
 	@Override
 	public void update() throws JsonProcessingException {
+		if(!Constant.UPDATE) return;
 		var request = new RequestHelper<String, Object>(restTemplate);
 		request.withUri(API.API_STOCK_LIST);
 //		var results = request.get(new ParameterizedTypeReference<>() {

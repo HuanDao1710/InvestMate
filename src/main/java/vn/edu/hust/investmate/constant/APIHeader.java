@@ -21,4 +21,18 @@ public class APIHeader {
 		entrade_headers.put("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1788.0");
 		return entrade_headers;
 	}
+
+	public static Map<String, String> getHeaderCompanyProfile () {
+		Map<String, String> tcbs_header = new HashMap<>();
+		tcbs_header.put("sec-ch-ua", "\"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"114\", \"Google Chrome\";v=\"114\"");
+		tcbs_header.put("DNT", "1");
+		tcbs_header.put("Accept-language", "vi");
+		tcbs_header.put("sec-ch-ua-mobile", "?0");
+		tcbs_header.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
+		tcbs_header.put("Content-Type", "application/json");
+		tcbs_header.put("Accept", "application/json");
+		tcbs_header.put("Referer", "https://tcinvest.tcbs.com.vn/");
+		tcbs_header.put("sec-ch-ua-platform", "\"Windows\"");
+		return tcbs_header;
+	}
 }

@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OverviewCompanyEntity extends BaseEntity{
+public class CompanyOverviewEntity extends BaseEntity{
 	@Id
 	private String code;
 	@MapsId
@@ -71,6 +71,4 @@ public class OverviewCompanyEntity extends BaseEntity{
 	private String keyDevelopments;
 	@Column(name="business_strategies")
 	private String businessStrategies;
-
-
 }

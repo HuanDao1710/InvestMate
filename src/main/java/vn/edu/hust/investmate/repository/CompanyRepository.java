@@ -9,7 +9,6 @@ import vn.edu.hust.investmate.domain.entity.CompanyEntity;
 @Repository
 public interface CompanyRepository extends JpaRepository<CompanyEntity, String> {
 	CompanyEntity findOneByCode(String code);
-
 	@Modifying
 	@Query("DELETE FROM CompanyEntity")
 	void deleteAllData();

@@ -22,7 +22,7 @@ public class CompanyEntity extends BaseEntity{
 	@Column(name = "business_type")
 	private String businessType;
 	@OneToOne(mappedBy = "companyEntity")
-	private OverviewCompanyEntity overviewCompanyEntity;
+	private CompanyOverviewEntity overviewCompanyEntity;
 	@OneToMany(mappedBy="companyEntity")
 	private Set<StockHistoryEntity> histories;
 

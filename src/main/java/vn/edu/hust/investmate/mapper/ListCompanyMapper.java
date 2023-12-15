@@ -1,4 +1,5 @@
 package vn.edu.hust.investmate.mapper;
 
-public class BaseMapper {
+public class ListCompanyMapper {
+
 }
