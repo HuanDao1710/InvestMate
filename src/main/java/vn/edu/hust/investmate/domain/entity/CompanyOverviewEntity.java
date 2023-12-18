@@ -14,8 +14,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CompanyOverviewEntity extends BaseEntity{
 	@Id
-	private String code;
-	@MapsId
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	@JoinColumn(name="code", referencedColumnName = "code")
 	@OneToOne
 	private CompanyEntity companyEntity;
@@ -57,18 +57,18 @@ public class CompanyOverviewEntity extends BaseEntity{
 	private double outstandingShare;
 	@Column(name = "issue_share")
 	private double issueShare;
-	@Column(name = "company_profile")
+	@Column(name = "company_profile", columnDefinition = "TEXT")
 	private String companyProfile;
 	@Column(name = "company_type")
 	private String companyType;
-	@Column(name = "history_dev")
+	@Column(name = "history_dev", columnDefinition = "TEXT")
 	private String historyDev;
-	@Column(name = "company_promise")
+	@Column(name = "company_promise", columnDefinition = "TEXT")
 	private String companyPromise;
-	@Column(name = "business_risk")
+	@Column(name = "business_risk", columnDefinition = "TEXT")
 	private String businessRisk;
-	@Column(name = "key_developments")
+	@Column(name = "key_developments", columnDefinition = "TEXT")
 	private String keyDevelopments;
-	@Column(name="business_strategies")
+	@Column(name="business_strategies", columnDefinition = "TEXT")
 	private String businessStrategies;
 }

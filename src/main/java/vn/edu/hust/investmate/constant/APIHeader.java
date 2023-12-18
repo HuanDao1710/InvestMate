@@ -22,7 +22,7 @@ public class APIHeader {
 		return entrade_headers;
 	}
 
-	public static Map<String, String> getHeaderCompanyProfile () {
+	public static Map<String, String> getTCBHeader () {
 		Map<String, String> tcbs_header = new HashMap<>();
 		tcbs_header.put("sec-ch-ua", "\"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"114\", \"Google Chrome\";v=\"114\"");
 		tcbs_header.put("DNT", "1");

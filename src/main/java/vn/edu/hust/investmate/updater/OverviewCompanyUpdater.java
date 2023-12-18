@@ -25,12 +25,14 @@ public class OverviewCompanyUpdater implements UpdaterService{
 	private final CompanyOverviewMapper companyOverviewMapper;
 	private final CompanyOverviewRepository companyOverviewRepository;
 	@Override
-	@Transactional
 	@Scheduled(fixedRate = 24 * 60 * 60* 1000)
-	public void update() throws JsonProcessingException {
+	public void update() throws JsonProcessingException, InterruptedException {
 		if(!Constant.UPDATE) return;
 		List<CompanyEntity> companyEntityList = companyRepository.findAll();
-		companyEntityList.stream().parallel().forEach(o->updateStockData(o));
+		for(var entity : companyEntityList) {
+			updateStockData(entity);
+			Thread.sleep(2000);
+		}
 	}
 
 	@Transactional
@@ -38,15 +40,19 @@ public class OverviewCompanyUpdater implements UpdaterService{
 		CompanyOverviewDTO companyOverviewDTO = new CompanyOverviewDTO();
 		var request1 = new RequestHelper<CompanyOverviewDTO.CompanyOverview, Object>(restTemplate);
 		var request2 = new RequestHelper<CompanyOverviewDTO.CompanyProfile, Object>(restTemplate);
-		request1.withUri(API.API_OVERVIEW_COMPANY);
-		request1.withVariables("symbol", companyEntity.getCode());
-		request2.withUri(API.API_PROFILE_COMPANY);
-		request2.withHeader(APIHeader.getHeaderCompanyProfile());
-		var result1 = request1.get(new ParameterizedTypeReference<>() {});
-		var result2 = request2.get(new ParameterizedTypeReference<>() {});
-		companyOverviewDTO.setCompanyOverview(result1);
-		companyOverviewDTO.setCompanyProfile(result2);
-		var entity = companyOverviewMapper.mapDTOtoEntity(companyOverviewDTO);
-		companyOverviewRepository.save(entity);
+		request1.withUri(API.API_OVERVIEW_COMPANY.replace("{symbol}", companyEntity.getCode()));
+		request2.withUri(API.API_PROFILE_COMPANY.replace("{symbol}", companyEntity.getCode()));
+		request2.withHeader(APIHeader.getTCBHeader());
+		try {
+			var result1 = request1.get(new ParameterizedTypeReference<>() {});
+			var result2 = request2.get(new ParameterizedTypeReference<>() {});
+			companyOverviewDTO.setCompanyOverview(result1);
+			companyOverviewDTO.setCompanyProfile(result2);
+			var entity = companyOverviewMapper.mapDTOtoEntity(companyOverviewDTO, companyEntity);
+			companyOverviewRepository.save(entity);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("ERROR IN CODE: " + companyEntity.getCode());
+		}
 	}
 }

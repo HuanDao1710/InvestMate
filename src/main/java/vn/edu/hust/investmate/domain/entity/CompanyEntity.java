@@ -25,5 +25,15 @@ public class CompanyEntity extends BaseEntity{
 	private CompanyOverviewEntity overviewCompanyEntity;
 	@OneToMany(mappedBy="companyEntity")
 	private Set<StockHistoryEntity> histories;
+	@OneToMany(mappedBy = "companyEntity")
+	private Set<LargeShareHolderEntity> largeShareHolders;
+	@OneToMany(mappedBy = "companyEntity")
+	private Set<FinancialRatioEntity> financialRatioEntities;
+	@OneToMany(mappedBy = "companyEntity")
+	private Set<IncomeStatementEntity> incomeStatementEntities;
+	@OneToMany(mappedBy = "companyEntity")
+	private Set<BalanceSheetEntity> balanceSheetEntities;
+	@OneToMany(mappedBy = "companyEntity")
+	private Set<CashFlowEntity> cashFlowEntities;
 
 }
