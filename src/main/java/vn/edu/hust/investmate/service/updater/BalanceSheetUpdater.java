@@ -1,4 +1,4 @@
-package vn.edu.hust.investmate.updater;
+package vn.edu.hust.investmate.service.updater;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
@@ -9,21 +9,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import vn.edu.hust.investmate.constant.API;
 import vn.edu.hust.investmate.constant.Constant;
-import vn.edu.hust.investmate.domain.dto.IncomeStatementDTO;
+import vn.edu.hust.investmate.domain.dto.BalanceSheetDTO;
 import vn.edu.hust.investmate.domain.entity.CompanyEntity;
-import vn.edu.hust.investmate.mapper.IncomeStatementMapper;
+import vn.edu.hust.investmate.mapper.BalanceSheetMapper;
+import vn.edu.hust.investmate.repository.BalanceSheetRepository;
 import vn.edu.hust.investmate.repository.CompanyRepository;
-import vn.edu.hust.investmate.repository.IncomeStatementRepository;
 import vn.edu.hust.investmate.untils.RequestHelper;
 import java.util.List;
 import java.util.Objects;
 
-@Component
 @RequiredArgsConstructor
-public class IncomeStatementUpdater implements UpdaterService{
+@Component
+public class BalanceSheetUpdater implements UpdaterService{
 	private final RestTemplate restTemplate;
-	private final IncomeStatementMapper incomeStatementMapper;
-	private final IncomeStatementRepository incomeStatementRepository;
+	private final BalanceSheetMapper balanceSheetMapper;
+	private final BalanceSheetRepository balanceSheetRepository;
 	private final CompanyRepository companyRepository;
 	@Override
 	@Scheduled(fixedRate = 24 * 60 * 60* 1000)
@@ -39,18 +39,18 @@ public class IncomeStatementUpdater implements UpdaterService{
 
 	@Transactional
 	public void updateStockData(CompanyEntity companyEntity, int yearly) {
-		var request = new RequestHelper<List<IncomeStatementDTO>, Objects>(restTemplate);
+		var request = new RequestHelper<List<BalanceSheetDTO>, Objects>(restTemplate);
 		String uri = API.API_FINANCIAL_REPORT
-						.replace("{symbol}", companyEntity.getCode())
-						.replace("{report_type}", "incomestatement");
+				.replace("{symbol}", companyEntity.getCode())
+				.replace("{report_type}", "balancesheet");
 		request.withUri(uri);
 		request.withParam("yearly", yearly);
 		request.withParam("isAll", true);
 		try {
 			var results = request.get(new ParameterizedTypeReference<>() {});
-			var incomeStatementEntities =  results.stream().parallel()
-					.map(dto -> incomeStatementMapper.toEntity(dto, companyEntity, yearly)).toList();
-			incomeStatementRepository.saveAll(incomeStatementEntities);
+			var balanceSheetEntities =  results.stream().parallel()
+					.map(dto -> balanceSheetMapper.toEntity(dto, companyEntity, yearly)).toList();
+			balanceSheetRepository.saveAll(balanceSheetEntities);
 		}catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("ERROR IN CODE: " + companyEntity.getCode());

@@ -1,4 +1,4 @@
-package vn.edu.hust.investmate.updater;
+package vn.edu.hust.investmate.service.updater;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 

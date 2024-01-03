@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "stock_history")
-public class StockHistoryEntity extends  BaseEntity{
+@Table(name = "index_history")
+public class IndexHistoryEntity extends  BaseEntity{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -29,6 +29,6 @@ public class StockHistoryEntity extends  BaseEntity{
 	@Column(name = "volume")
 	private double volume;
 	@ManyToOne
-	@JoinColumn(name="code", nullable=false)
-	private CompanyEntity companyEntity;
+	@JoinColumn(name="comGroupCode", nullable=false)
+	private IndexEntity indexEntity;
 }

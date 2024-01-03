@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "stock_history")
-public class StockHistoryEntity extends  BaseEntity{
+@Table(name = "stock_day_history")
+public class StockDayHistoryEntity extends  BaseEntity{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

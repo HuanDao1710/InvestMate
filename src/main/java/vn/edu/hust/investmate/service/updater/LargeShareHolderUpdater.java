@@ -1,4 +1,4 @@
-package vn.edu.hust.investmate.updater;
+package vn.edu.hust.investmate.service.updater;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
@@ -6,12 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 import vn.edu.hust.investmate.constant.API;
 import vn.edu.hust.investmate.constant.APIHeader;
 import vn.edu.hust.investmate.constant.Constant;
-import vn.edu.hust.investmate.domain.dto.CompanyOverviewDTO;
 import vn.edu.hust.investmate.domain.dto.LargeShareHolderDTO;
 import vn.edu.hust.investmate.domain.entity.CompanyEntity;
 import vn.edu.hust.investmate.mapper.LargeShareHolderMapper;

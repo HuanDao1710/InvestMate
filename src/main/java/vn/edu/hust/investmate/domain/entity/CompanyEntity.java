@@ -23,17 +23,18 @@ public class CompanyEntity extends BaseEntity{
 	private String businessType;
 	@OneToOne(mappedBy = "companyEntity")
 	private CompanyOverviewEntity overviewCompanyEntity;
-	@OneToMany(mappedBy="companyEntity")
+	@OneToMany(mappedBy="companyEntity", fetch = FetchType.LAZY)
 	private Set<StockHistoryEntity> histories;
-	@OneToMany(mappedBy = "companyEntity")
+	@OneToMany(mappedBy = "companyEntity", fetch = FetchType.LAZY)
 	private Set<LargeShareHolderEntity> largeShareHolders;
-	@OneToMany(mappedBy = "companyEntity")
+	@OneToMany(mappedBy = "companyEntity", fetch = FetchType.LAZY)
 	private Set<FinancialRatioEntity> financialRatioEntities;
-	@OneToMany(mappedBy = "companyEntity")
+	@OneToMany(mappedBy = "companyEntity", fetch = FetchType.LAZY)
 	private Set<IncomeStatementEntity> incomeStatementEntities;
-	@OneToMany(mappedBy = "companyEntity")
+	@OneToMany(mappedBy = "companyEntity", fetch = FetchType.LAZY)
 	private Set<BalanceSheetEntity> balanceSheetEntities;
-	@OneToMany(mappedBy = "companyEntity")
+	@OneToMany(mappedBy = "companyEntity", fetch = FetchType.LAZY)
 	private Set<CashFlowEntity> cashFlowEntities;
-
+	@OneToMany(mappedBy = "companyEntity", fetch = FetchType.LAZY)
+	private Set<TemporaryEntity> temporaryEntities;
 }

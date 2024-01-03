@@ -1,4 +1,4 @@
-package vn.edu.hust.investmate.updater;
+package vn.edu.hust.investmate.service.updater;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
@@ -13,8 +13,6 @@ import vn.edu.hust.investmate.domain.dto.IndexDTO;
 import vn.edu.hust.investmate.mapper.IndexMapper;
 import vn.edu.hust.investmate.repository.IndexRepository;
 import vn.edu.hust.investmate.untils.RequestHelper;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -32,6 +30,7 @@ public class IndexUpdater implements UpdaterService{
 		try {
 			var results = request.get(new ParameterizedTypeReference<>() {}).getItems();
 			var indexEntities = results.stream().parallel().map(indexMapper::toEntity).toList();
+			indexRepository.deleteAllData();
 			indexRepository.saveAll(indexEntities);
 		} catch (Exception e) {
 			e.printStackTrace();

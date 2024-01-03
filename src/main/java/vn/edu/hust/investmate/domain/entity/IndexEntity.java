@@ -2,8 +2,10 @@ package vn.edu.hust.investmate.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
-import java.util.Date;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -41,4 +43,6 @@ public class IndexEntity {
 	private String description;
 	@Column(name = "status")
 	private int status;
+	@OneToMany(mappedBy = "indexEntity", fetch = FetchType.LAZY)
+	private Set<IndexHistoryEntity> indexHistoryEntities;
 }

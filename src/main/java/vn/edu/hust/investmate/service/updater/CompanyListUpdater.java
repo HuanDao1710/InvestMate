@@ -1,11 +1,10 @@
-package vn.edu.hust.investmate.updater;
+package vn.edu.hust.investmate.service.updater;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -43,16 +42,19 @@ public class CompanyListUpdater implements UpdaterService{
 		Map<String, List<Map<String, Object>>> jsonMap = mapper.readValue(results, new TypeReference<>() {});
 
 		List<Map<String, Object>> dataList = jsonMap.get("data");
-		List<CompanyEntity> companyEntityList = new ArrayList<>();
-		for(var map : dataList) {
-			CompanyEntity entity = new CompanyEntity();
-			entity.setCode((String) map.get("code"));
+		List<CompanyEntity> companyEntityList =
+		dataList.stream().parallel().map(map -> {
+			CompanyEntity entity = companyRepository.findOneByCode((String)map.get("code"));
+			if(entity == null) {
+				entity = new CompanyEntity();
+				entity.setCode((String) map.get("code"));
+			}
 			entity.setExchange((String) map.get("san"));
 			entity.setFullNameVi((String) map.get("fullname_vi"));
-			entity.setBusinessType((String) map.get("san"));
-			companyEntityList.add(entity);
-		}
-		companyRepository.deleteAllData();
+			entity.setBusinessType(map.get("loaidn").toString());
+			return entity;
+		}). toList();
+//		companyRepository.deleteAllData();
 		companyRepository.saveAll(companyEntityList);
 	}
 }
