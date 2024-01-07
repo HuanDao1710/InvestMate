@@ -19,4 +19,5 @@ public interface StockDayHistoryRepository extends JpaRepository<StockDayHistory
 
 
 	List<StockDayHistoryEntity> findByCompanyEntityAndTimeBetweenOrderByTimeAsc(CompanyEntity companyEntity, long from, long to);
+	List<StockDayHistoryEntity> findByCompanyEntityAndTimeBetween(CompanyEntity companyEntity, long from, long to);
 }

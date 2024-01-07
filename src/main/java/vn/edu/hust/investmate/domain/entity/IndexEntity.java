@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import java.io.Serializable;
 import java.util.Set;
 
 @Setter
@@ -13,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "index")
-public class IndexEntity {
+public class IndexEntity implements Serializable {
 	@Id
 	@Column(name = "comGroupCode")
 	private String comGroupCode;

@@ -3,6 +3,7 @@ package vn.edu.hust.investmate.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
@@ -11,7 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "companies")
-public class CompanyEntity extends BaseEntity{
+public class CompanyEntity extends BaseEntity implements Serializable {
 	@Id
 	@Column(name="code")
 	private String code;
@@ -21,7 +22,11 @@ public class CompanyEntity extends BaseEntity{
 	private String fullNameVi;
 	@Column(name = "business_type")
 	private String businessType;
-	@OneToOne(mappedBy = "companyEntity")
+	@OneToOne(mappedBy = "companyEntity" , fetch = FetchType.LAZY)
+	private TemporaryEntity temporaryEntity;
+	@OneToOne(mappedBy = "companyEntity" , fetch = FetchType.LAZY)
+	private StockFilterEntity stockFilterEntity;
+	@OneToOne(mappedBy = "companyEntity" , fetch = FetchType.LAZY)
 	private CompanyOverviewEntity overviewCompanyEntity;
 	@OneToMany(mappedBy="companyEntity", fetch = FetchType.LAZY)
 	private Set<StockHistoryEntity> histories;
@@ -35,6 +40,4 @@ public class CompanyEntity extends BaseEntity{
 	private Set<BalanceSheetEntity> balanceSheetEntities;
 	@OneToMany(mappedBy = "companyEntity", fetch = FetchType.LAZY)
 	private Set<CashFlowEntity> cashFlowEntities;
-	@OneToMany(mappedBy = "companyEntity", fetch = FetchType.LAZY)
-	private Set<TemporaryEntity> temporaryEntities;
 }

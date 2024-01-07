@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
@@ -13,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "temporary")
-public class TemporaryEntity extends BaseEntity{
+public class TemporaryEntity extends BaseEntity implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -23,7 +25,7 @@ public class TemporaryEntity extends BaseEntity{
 	private double rsRaw;
 	@Column(name = "smg")
 	private double smg;
-	@Column(name="price_preference")
+	@Column(name = "price_preference")
 	private double pricePreference;
 	@Column(name = "price_change")
 	private double priceChange;
@@ -37,7 +39,11 @@ public class TemporaryEntity extends BaseEntity{
 	private Long updateTime;
 	@ElementCollection
 	private List<Double> timeSeries;
-	@ManyToOne
-	@JoinColumn(name="code", nullable=false)
+	@Column(name = "market_cap") // new
+	private Double marketCap;
+	@Column(name = "avg_trading_value_20day") // new
+	private Double avgTradingValue20Day;
+	@JoinColumn(name="code", referencedColumnName = "code")
+	@OneToOne
 	private CompanyEntity companyEntity;
 }

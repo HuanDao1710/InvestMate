@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import vn.edu.hust.investmate.constant.Constant;
 import vn.edu.hust.investmate.domain.entity.CompanyEntity;
+import vn.edu.hust.investmate.domain.entity.StockDayHistoryEntity;
 import vn.edu.hust.investmate.domain.entity.StockHistoryEntity;
 import vn.edu.hust.investmate.domain.entity.TemporaryEntity;
 import vn.edu.hust.investmate.repository.CompanyRepository;
@@ -14,6 +15,7 @@ import vn.edu.hust.investmate.repository.StockHistoryRepository;
 import vn.edu.hust.investmate.repository.TemporaryRepository;
 import vn.edu.hust.investmate.untils.TimeUtils;
 import java.util.List;
+import java.util.Objects;
 
 // check các hàm get Day chạy đúng
 @Component
@@ -28,7 +30,7 @@ public class TemporaryUpdater implements UpdaterService{
 	@Override
 	@Transactional
 	public void update() {
-//		if(!Constant.UPDATE) return;
+		if(!Constant.UPDATE) return;
 		var companyList = companyRepository.findAll();
 		companyList.stream().parallel().forEach(this::updateStockData);
 		// update SMG
@@ -71,7 +73,8 @@ public class TemporaryUpdater implements UpdaterService{
 		double currentClose = entityListCurrentDay.get(len - 1).getClose();
 		double currentOpen = entityListCurrentDay.get(0).getOpen();
 		// entity
-		TemporaryEntity entity = new TemporaryEntity();
+		TemporaryEntity entity = temporaryRepository.findOneByCompanyEntity(companyEntity);
+		if(entity == null) entity = new TemporaryEntity();
 		entity.setCompanyEntity(companyEntity);
 		entity.setUpdateTime(entityListCurrentDay.get(len - 1).getTime());
 		entity.setPrice(currentClose);
@@ -83,15 +86,24 @@ public class TemporaryUpdater implements UpdaterService{
 		entity.setPercentChangeMonth(getChangeMonth(companyEntity, endTime, currentClose));
 		entity.setRsRaw(getRSRaw(companyEntity, endTime, currentClose));
 		entity.setTimeSeries(getTimeSeries(entityListCurrentDay));
+		entity.setAvgTradingValue20Day(calculateAvgTradingValue20Day(companyEntity, endTime));
+		entity.setMarketCap(calculateMarketCap(companyEntity, currentClose));
+		//update
+		temporaryRepository.save(entity);
 
-		//delete before
-		try {
-			temporaryRepository.deleteByCompanyEntity(companyEntity);
-			//update
-			temporaryRepository.save(entity);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	}
+
+	private double calculateAvgTradingValue20Day(CompanyEntity company,long endTime) {
+		var day = TimeUtils.getDayBeforeTime(20, endTime);
+		List<StockDayHistoryEntity> results = stockDayHistoryRepository.findByCompanyEntityAndTimeBetween(company, day.getStartOfDay(), endTime);
+		return results.stream()
+				.mapToDouble(e -> e.getClose() * e.getVolume())
+				.average()
+				.orElse(Double.NaN);
+	}
+
+	private double calculateMarketCap(CompanyEntity companyEntity, double close) {
+		return companyEntity.getOverviewCompanyEntity().getIssueShare() * close;
 	}
 
 	private List<Double> getTimeSeries(List<StockHistoryEntity> entityListCurrentDay) {
