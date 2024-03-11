@@ -6,10 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import vn.edu.hust.investmate.domain.entity.CompanyEntity;
-import vn.edu.hust.investmate.domain.entity.FinancialRatioEntity;
-import vn.edu.hust.investmate.domain.entity.IncomeStatementEntity;
-import vn.edu.hust.investmate.domain.entity.StockFilterEntity;
+import vn.edu.hust.investmate.constant.Constant;
+import vn.edu.hust.investmate.domain.entity.*;
 import vn.edu.hust.investmate.repository.*;
 
 @Component
@@ -25,9 +23,10 @@ public class StockFilterUpdater implements UpdaterService{
 	@Scheduled(fixedRate = Long.MAX_VALUE)
 	@Override
 	public void update() throws JsonProcessingException, InterruptedException {
-//		if(!Constant.UPDATE) return;
+		if(!Constant.UPDATE) return;
 		var companies = companyRepository.findAll();
 		companies.stream().parallel().forEach(this::updateStock);
+		System.out.println("DONE!");
 	}
 
 	@Transactional
@@ -47,21 +46,28 @@ public class StockFilterUpdater implements UpdaterService{
 				.stream().findFirst().orElse(new FinancialRatioEntity());
 		var balanceSheet = balanceSheetRepository
 				.findAllByYearAndQuarter(company, 0, sort)
-				.stream().findFirst().orElse(null);
-		StockFilterEntity stockFilterEntity = stockFilterRepository.findOneByCompanyEntity(company);
-		if(stockFilterEntity == null) stockFilterEntity = new StockFilterEntity();
-		stockFilterEntity.setIndustry(company.getOverviewCompanyEntity().getIndustry());
-		stockFilterEntity.setExchange(company.getExchange());
-		stockFilterEntity.setEps(financialRatio.getEarningPerShare());
-		stockFilterEntity.setEpsGrowth1Year(financialRation1Year.getEpsChange());
-		stockFilterEntity.setLastQuarterProfitGrowth(incomeStatement.getQuarterOperationProfitGrowth());
-		stockFilterEntity.setRoe(financialRatio.getRoe());
-		stockFilterEntity.setGrossMargin(financialRatio.getGrossProfitMargin());
-		stockFilterEntity.setDoe(financialRatio.getDebtOnAsset());
-		stockFilterEntity.setPe(financialRatio.getPriceToEarning());
-		stockFilterEntity.setPb(financialRatio.getPriceToBook());
-		stockFilterEntity.setEvEbitda(financialRatio.getValueBeforeEbitda());
-		stockFilterEntity.setAsset(balanceSheet.getAsset());
-		stockFilterRepository.save(stockFilterEntity);
+				.stream().findFirst().orElse(new BalanceSheetEntity());
+		try {
+			StockFilterEntity stockFilterEntity = stockFilterRepository.findOneByCompanyEntity(company);
+			if(stockFilterEntity == null) stockFilterEntity = new StockFilterEntity();
+			stockFilterEntity.setCompanyEntity(company);
+			stockFilterEntity.setIndustry(company.getOverviewCompanyEntity().getIndustry());
+			stockFilterEntity.setExchange(company.getExchange());
+			stockFilterEntity.setEps(financialRatio.getEarningPerShare());
+			stockFilterEntity.setEpsGrowth1Year(financialRation1Year.getEpsChange());
+			stockFilterEntity.setLastQuarterProfitGrowth(incomeStatement.getQuarterOperationProfitGrowth());
+			stockFilterEntity.setRoe(financialRatio.getRoe());
+			stockFilterEntity.setGrossMargin(financialRatio.getGrossProfitMargin());
+			stockFilterEntity.setDoe(financialRatio.getDebtOnAsset());
+			stockFilterEntity.setPe(financialRatio.getPriceToEarning());
+			stockFilterEntity.setPb(financialRatio.getPriceToBook());
+			stockFilterEntity.setEvEbitda(financialRatio.getValueBeforeEbitda());
+			stockFilterEntity.setAsset(balanceSheet.getAsset());
+			stockFilterRepository.save(stockFilterEntity);
+			System.out.println("COMPLETE: " + company.getCode());
+		} catch (Exception e) {
+			System.out.println("FAIL: " + company.getCode());
+			e.printStackTrace();
+		}
 	}
 }
