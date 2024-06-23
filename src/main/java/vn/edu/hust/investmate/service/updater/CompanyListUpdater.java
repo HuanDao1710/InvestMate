@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import vn.edu.hust.investmate.constant.API;
 import vn.edu.hust.investmate.constant.Constant;
@@ -20,22 +21,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class CompanyListUpdater implements UpdaterService{
 	private final RestTemplate restTemplate;
 	private final CompanyRepository companyRepository;
-	@Scheduled(fixedRate = Long.MAX_VALUE)
+//	@Scheduled(fixedRate = Long.MAX_VALUE)
 	@Transactional
 	@Override
-	public void update() throws JsonProcessingException {
-		if(!Constant.UPDATE) return;
+	public void update() {
+//		if(!Constant.UPDATE) return;
 		var request = new RequestHelper<String, Object>(restTemplate);
 		request.withUri(API.API_STOCK_LIST);
 		var results = request.get(new ParameterizedTypeReference<>() {});
 //		var results = ReadFileToString.readFileToString("F:\\DATN\\backend\\invest-mate\\src\\main\\resources\\data\\list_stock.txt");
 		ObjectMapper mapper = new ObjectMapper();
-		Map<String, List<Map<String, Object>>> jsonMap = mapper.readValue(results, new TypeReference<>() {});
+		Map<String, List<Map<String, Object>>> jsonMap = null;
+		try {
+			jsonMap = mapper.readValue(results, new TypeReference<>() {});
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 
 		List<Map<String, Object>> dataList = jsonMap.get("data");
 		List<CompanyEntity> companyEntityList =

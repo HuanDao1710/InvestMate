@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import vn.edu.hust.investmate.constant.API;
 import vn.edu.hust.investmate.constant.Constant;
@@ -18,7 +19,7 @@ import vn.edu.hust.investmate.repository.FinancialRatioRepository;
 import vn.edu.hust.investmate.untils.RequestHelper;
 import java.util.List;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class FinancialRatioUpdater implements UpdaterService{
 	private final RestTemplate restTemplate;
@@ -26,16 +27,20 @@ public class FinancialRatioUpdater implements UpdaterService{
 	private  final CompanyRepository companyRepository;
 	private final FinancialRationMapper financialRationMapper;
 	@Override
-	@Scheduled(fixedRate = 24 * 60 * 60* 1000)
-	public void update() throws JsonProcessingException, InterruptedException {
-		if(!Constant.UPDATE) return;
+//	@Scheduled(fixedRate = 24 * 60 * 60* 1000)
+	public void update() {
+//		if(!Constant.UPDATE) return;
 		List<CompanyEntity> companyEntityList = companyRepository.findAll();
 		for(var companyEntity : companyEntityList) {
 			//1 theo năm
 			updateStockData(companyEntity, 1);
 			//0 theo quý
 			updateStockData(companyEntity, 0);
-			Thread.sleep(2000);
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 

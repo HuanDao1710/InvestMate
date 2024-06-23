@@ -23,18 +23,18 @@ public class IndexDTO {
 	public static class IndexInfoDTO {
 		private String comGroupCode;
 		private String parentComGroupCode;
-		private String comGroupName;
-		private String friendlyName;
-		private int comGroupType;
-		private int priority;
-		private int calculateRatio;
-		private int calculateReturn;
-		private int priorityIcbIndustry;
-		private int calculateRatioIcbIndustry;
-		private int calculateReturnIcbIndustry;
+//		private String comGroupName;
+//		private String friendlyName;
+//		private int comGroupType;
+//		private int priority;
+//		private int calculateRatio;
+//		private int calculateReturn;
+//		private int priorityIcbIndustry;
+//		private int calculateRatioIcbIndustry;
+//		private int calculateReturnIcbIndustry;
 		private int comGroupOrder;
-		private String description;
-		private int status;
+//		private String description;
+//		private int status;
 			}
 
 }

@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import vn.edu.hust.investmate.constant.Constant;
 import vn.edu.hust.investmate.domain.entity.CompanyEntity;
 import vn.edu.hust.investmate.domain.entity.StockDayHistoryEntity;
@@ -19,14 +20,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 // check các hàm get Day chạy đúng
-@Component
+@Service
 @RequiredArgsConstructor
 public class TemporaryUpdater implements UpdaterService{
 	private final StockHistoryRepository stockHistoryRepository;
 	private final CompanyRepository companyRepository;
 	private final TemporaryRepository temporaryRepository;
 	private final StockDayHistoryRepository stockDayHistoryRepository;
-	@Scheduled(fixedRate = Long.MAX_VALUE)
+//	@Scheduled(fixedRate = Long.MAX_VALUE)
 	//	@Scheduled(cron = "0 18 * * MON-FRI")
 	@Override
 	@Transactional
@@ -90,6 +91,7 @@ public class TemporaryUpdater implements UpdaterService{
 			entity.setTimeSeries(getTimeSeries(entityListCurrentDay));
 			entity.setAvgTradingValue20Day(calculateAvgTradingValue20Day(companyEntity, endTime));
 			entity.setMarketCap(calculateMarketCap(companyEntity, currentClose));
+			entity = calculateDailyVolumeAndTradingValue(entity, entityListCurrentDay);
 			//update
 			temporaryRepository.save(entity);
 			System.out.println("COMPLETE: " + companyEntity.getCode());
@@ -107,6 +109,20 @@ public class TemporaryUpdater implements UpdaterService{
 				.mapToDouble(e -> e.getClose() * e.getVolume())
 				.average()
 				.orElse(0);
+	}
+
+	private TemporaryEntity calculateDailyVolumeAndTradingValue(TemporaryEntity temporary,
+			List<StockHistoryEntity> entityListCurrentDay) {
+		double volume = 0;
+		double tradingValue = 0;
+		for(var entity : entityListCurrentDay) {
+			volume += entity.getVolume();
+			tradingValue += entity.getVolume() * entity.getClose();
+		}
+
+		temporary.setDailyTradingValue(tradingValue);
+		temporary.setVolume(volume);
+		return temporary;
 	}
 
 	private double calculateMarketCap(CompanyEntity companyEntity, double close) {

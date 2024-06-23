@@ -73,11 +73,67 @@ public class TimeUtils {
 		return day;
 	}
 
+	public static int getCurrentYear() {
+		return LocalDate.now().getYear();
+	}
+
+	// Phương thức để lấy quý hiện tại
+	public static int getCurrentQuarter() {
+		int currentMonth = LocalDate.now().getMonthValue();
+		return (currentMonth - 1) / 3 + 1;
+	}
+
+	public static SpecificTime getPreviousQuarterEpochTime() {
+		LocalDate now = LocalDate.now();
+
+		LocalDate startOfQuarter;
+		LocalDate endOfQuarter;
+
+		int currentQuarter = (now.getMonthValue() - 1) / 3 + 1;
+		switch (currentQuarter) {
+			case 1: // Q1, quý trước là Q4 của năm trước
+				startOfQuarter = LocalDate.of(now.getYear() - 1, 10, 1);
+				endOfQuarter = LocalDate.of(now.getYear() - 1, 12, 31);
+				break;
+			case 2: // Q2, quý trước là Q1
+				startOfQuarter = LocalDate.of(now.getYear(), 1, 1);
+				endOfQuarter = LocalDate.of(now.getYear(), 3, 31);
+				break;
+			case 3: // Q3, quý trước là Q2
+				startOfQuarter = LocalDate.of(now.getYear(), 4, 1);
+				endOfQuarter = LocalDate.of(now.getYear(), 6, 30);
+				break;
+			case 4: // Q4, quý trước là Q3
+				startOfQuarter = LocalDate.of(now.getYear(), 7, 1);
+				endOfQuarter = LocalDate.of(now.getYear(), 9, 30);
+				break;
+			default:
+				throw new IllegalStateException("Unexpected value: " + currentQuarter);
+		}
+
+		ZonedDateTime startDateTime = startOfQuarter.atStartOfDay(ZoneId.systemDefault());
+		ZonedDateTime endDateTime = endOfQuarter.atTime(23, 59, 59).atZone(ZoneId.systemDefault());
+
+		SpecificTime specificTime = new SpecificTime();
+		specificTime.setStartTime(startDateTime.toEpochSecond());
+		specificTime.setEndTime(endDateTime.toEpochSecond());
+
+		return specificTime;
+	}
+
 
 	@Data
 	@NoArgsConstructor
 	public static class Day {
 		private Long startOfDay;
 		private Long endOfDay;
+	}
+
+
+	@Data
+	@NoArgsConstructor
+	public static class SpecificTime {
+		private Long startTime;
+		private Long endTime;
 	}
 }

@@ -6,18 +6,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import vn.edu.hust.investmate.constant.API;
 import vn.edu.hust.investmate.constant.APIHeader;
 import vn.edu.hust.investmate.constant.Constant;
 import vn.edu.hust.investmate.domain.dto.CompanyOverviewDTO;
 import vn.edu.hust.investmate.domain.entity.CompanyEntity;
+import vn.edu.hust.investmate.domain.entity.CompanyOverviewEntity;
 import vn.edu.hust.investmate.mapper.CompanyOverviewMapper;
 import vn.edu.hust.investmate.repository.CompanyOverviewRepository;
 import vn.edu.hust.investmate.repository.CompanyRepository;
 import vn.edu.hust.investmate.untils.RequestHelper;
 import java.util.List;
-@Component
+@Service
 @RequiredArgsConstructor
 public class OverviewCompanyUpdater implements UpdaterService{
 	private final RestTemplate restTemplate;
@@ -25,13 +27,17 @@ public class OverviewCompanyUpdater implements UpdaterService{
 	private final CompanyOverviewMapper companyOverviewMapper;
 	private final CompanyOverviewRepository companyOverviewRepository;
 	@Override
-	@Scheduled(fixedRate = 24 * 60 * 60* 1000)
-	public void update() throws JsonProcessingException, InterruptedException {
-		if(!Constant.UPDATE) return;
+//	@Scheduled(fixedRate = 24 * 60 * 60* 1000)
+	public void update() {
+//		if(!Constant.UPDATE) return;
 		List<CompanyEntity> companyEntityList = companyRepository.findAll();
 		for(var entity : companyEntityList) {
 			updateStockData(entity);
-			Thread.sleep(2000);
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -48,7 +54,16 @@ public class OverviewCompanyUpdater implements UpdaterService{
 			var result2 = request2.get(new ParameterizedTypeReference<>() {});
 			companyOverviewDTO.setCompanyOverview(result1);
 			companyOverviewDTO.setCompanyProfile(result2);
-			var entity = companyOverviewMapper.mapDTOtoEntity(companyOverviewDTO, companyEntity);
+
+			CompanyOverviewEntity entity;
+
+			var olds = companyOverviewRepository.findByCompanyEntity(companyEntity);
+			if(!olds.isEmpty()) {
+				entity = companyOverviewMapper.updateWithDTO(companyOverviewDTO, olds.get(0));
+
+			} else {
+				entity = companyOverviewMapper.mapDTOtoEntity(companyOverviewDTO, companyEntity);
+			}
 			companyOverviewRepository.save(entity);
 		} catch (Exception e) {
 			e.printStackTrace();
