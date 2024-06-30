@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import vn.edu.hust.investmate.repository.StockDayHistoryRepository;
+import vn.edu.hust.investmate.service.updater.*;
 
 @Component
 public class ScheduledUpdater {
@@ -62,7 +63,6 @@ public class ScheduledUpdater {
 	}
 
 	@Scheduled(cron = "0 0 18 * * MON-FRI", zone = "Asia/Ho_Chi_Minh")
-//	@Scheduled(fixedRate = 1000000000)
 	public void performDailyUpdate() {
 		stockHistoryUpdater.update();
 		indexHistoryUpdater.update();
